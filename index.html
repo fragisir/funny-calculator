@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sassy Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            max-width: 400px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .display {
+            background: #222;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 2em;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border: 3px solid #444;
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .number {
+            background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
+            color: #333;
+        }
+
+        .operator {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .equals {
+            background: linear-gradient(145deg, #4ecdc4, #44a08d);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear {
+            background: linear-gradient(145deg, #feca57, #ff9ff3);
+            color: #333;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
+
+        .comment {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: #555;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .comment.animate {
+            animation: bounce 0.6s ease;
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .mood-indicator {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="mood-indicator" id="mood">😊</div>
+        <h1 class="title">Sassy Calculator</h1>
+        <p class="subtitle">Your mathematically judgmental friend</p>
+
+        <div class="display" id="display">0</div>
+
+        <div class="buttons">
+            <button class="clear" onclick="clearAll()">AC</button>
+            <button class="clear" onclick="deleteLast()">⌫</button>
+            <button class="operator" onclick="appendOperator('/')">/</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="equals" onclick="calculate()" rowspan="2">=</button>
+
+            <button class="number zero" onclick="appendNumber('0')">0</button>
+            <button class="number" onclick="appendNumber('.')">.</button>
+        </div>
+
+        <div class="comment" id="comment">Ready to judge your math skills! 🤓</div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let comment = document.getElementById('comment');
+        let mood = document.getElementById('mood');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = null;
+        let waitingForOperand = false;
+
+        const funnyComments = {
+            easy: [
+                "Really? That's what you needed me for? 🙄",
+                "My calculator brain is way too powerful for this! 🧠",
+                "Even a potato could have done that calculation! 🥔",
+                "Are you testing if I still work? Because I do! ✨",
+                "That was easier than stealing candy from a baby! 🍭"
+            ],
+            medium: [
+                "Not bad, human. Not bad at all! 👏",
+                "See? I told you I was good at this! 😎",
+                "Math wizard at your service! 🧙‍♂️",
+                "I'm basically a mathematical genius! 🤓",
+                "That actually required some of my brain cells! 🧠"
+            ],
+            hard: [
+                "Wow, you're really putting me to work! 💪",
+                "Now we're talking! This is more like it! 🔥",
+                "Finally, a challenge worthy of my talents! ⚡",
+                "My circuits are getting warm from all this thinking! 🌡️",
+                "I live for complicated calculations like this! 💝"
+            ],
+            zero: [
+                "Zero? Really? That's your final answer? 🤨",
+                "Ah, the mathematical equivalent of 'meh'! 😑",
+                "Zero: the loneliest number! 😢",
+                "Nothing to see here, folks! Literally! 👻",
+                "You've achieved mathematical emptiness! 🕳️"
+            ],
+            negative: [
+                "Going negative? How pessimistic! 😒",
+                "Negative vibes detected! 📉",
+                "Below zero? That's cold! ❄️",
+                "Negative results = negative energy! ⚡",
+                "Mathematics can be so depressing sometimes! 😭"
+            ],
+            big: [
+                "That's a big number! I'm impressed! 🤯",
+                "Whoa there, high roller! 💰",
+                "Big numbers make me dizzy! 🌪️",
+                "You're thinking BIG today! 📈",
+                "That number has more digits than my attention span! 🤪"
+            ],
+            decimal: [
+                "Getting precise, are we? I like it! 📐",
+                "Decimals are my middle name! Well, one of them! 🎯",
+                "Precision is key in mathematics! 🔑",
+                "Look at you being all accurate and stuff! 👌",
+                "Decimal points make everything more interesting! ✨"
+            ],
+            divideByZero: [
+                "NOPE! Not today, Satan! 👹",
+                "Divide by zero? Do you want to break the universe?! 🌌",
+                "Error 404: Mathematical logic not found! 🚫",
+                "That's illegal in 47 dimensions! 🚔",
+                "My programmer specifically told me not to do that! 🙅‍♂️"
+            ]
+        };
+
+        const moods = ['😊', '🤓', '😎', '🙄', '🤯', '😂', '🔥', '✨', '🎉', '🤪'];
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        function appendNumber(num) {
+            if (waitingForOperand) {
+                currentInput = num;
+                waitingForOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? num : currentInput + num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(nextOperator) {
+            const inputValue = parseFloat(currentInput);
+
+            if (previousInput === null) {
+                previousInput = inputValue;
+            } else if (operator) {
+                const currentValue = previousInput || 0;
+                const newValue = calculate();
+
+                currentInput = String(newValue);
+                previousInput = newValue;
+                updateDisplay();
+            }
+
+            waitingForOperand = true;
+            operator = nextOperator;
+        }
+
+        function calculate() {
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            let result;
+
+            if (previousInput === null || operator === null) {
+                return current;
+            }
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        showComment(funnyComments.divideByZero);
+                        setMood('🚫');
+                        return prev;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return current;
+            }
+
+            currentInput = String(result);
+            previousInput = null;
+            operator = null;
+            waitingForOperand = true;
+
+            // Show funny comment based on result
+            setTimeout(() => {
+                showFunnyComment(result);
+            }, 100);
+
+            updateDisplay();
+            return result;
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            previousInput = null;
+            operator = null;
+            waitingForOperand = false;
+            updateDisplay();
+            showComment(['Starting fresh! Let\'s see what you\'ve got! 🎯']);
+            setMood('😊');
+        }
+
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+            if (Math.random() > 0.7) {
+                showComment(['Oops! Backtracking, are we? 🔄']);
+            }
+        }
+
+        function showFunnyComment(result) {
+            let commentArray;
+
+            if (result === 0) {
+                commentArray = funnyComments.zero;
+            } else if (result < 0) {
+                commentArray = funnyComments.negative;
+            } else if (Math.abs(result) > 1000000) {
+                commentArray = funnyComments.big;
+            } else if (result % 1 !== 0) {
+                commentArray = funnyComments.decimal;
+            } else if (Math.abs(result) < 10) {
+                commentArray = funnyComments.easy;
+            } else if (Math.abs(result) < 1000) {
+                commentArray = funnyComments.medium;
+            } else {
+                commentArray = funnyComments.hard;
+            }
+
+            showComment(commentArray);
+        }
+
+        function showComment(commentArray) {
+            const randomComment = commentArray[Math.floor(Math.random() * commentArray.length)];
+            comment.textContent = randomComment;
+            comment.classList.add('animate');
+
+            setTimeout(() => {
+                comment.classList.remove('animate');
+            }, 600);
+
+            setMood(moods[Math.floor(Math.random() * moods.length)]);
+        }
+
+        function setMood(newMood) {
+            mood.textContent = newMood;
+            mood.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                mood.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Add keyboard support
+        document.addEventListener('keydown', function (event) {
+            const key = event.key;
+
+            if (key >= '0' && key <= '9' || key === '.') {
+                appendNumber(key);
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                appendOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        });
+
+        // Show random mood occasionally
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                setMood(moods[Math.floor(Math.random() * moods.length)]);
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>
